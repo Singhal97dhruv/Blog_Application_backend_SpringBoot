@@ -1,0 +1,41 @@
+server:
+  port: 9094
+
+spring:
+  application:
+    name: api-gateway
+  main:
+    web-application-type: REACTIVE
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+      routes:
+        - id: blogs-apis
+          uri: lb://BLOGS.APIS
+          predicates:
+            - Path=/api/users/**
+        - id: categories
+          uri: lb://CATEGORIES
+          predicates:
+            - Path=/api/categories/**
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    gateway:
+      enabled: true
