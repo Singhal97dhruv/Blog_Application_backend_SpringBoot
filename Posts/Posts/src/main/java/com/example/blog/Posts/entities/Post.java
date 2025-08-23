@@ -18,7 +18,7 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer postId;
 
-    @Column(name = "post_title", length = 100, nullable = false)
+    @Column(name = "post_title")
     private String title;
 
     private String content;
@@ -27,10 +27,8 @@ public class Post {
 
     private Date addDate;
 
-    @Transient
-    private Category category;
+    private Integer categoryId;
 
-    @Transient
-    private User user;
+    private int userId;
 
 }
