@@ -1,6 +1,7 @@
 package com.example.blog.Posts.service;
 
 import com.example.blog.Posts.entities.Post;
+import com.example.blog.Posts.payload.PostResponse;
 import com.example.blog.Posts.utilities.PostDTO;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface PostService {
     void deletePost(Integer postId);
 
     //GET all posts
-    List<PostDTO> getAllPosts();
+    PostResponse getAllPosts(Integer pageSize, Integer pageNumber, String sortBy, String sortDir);
 
     //Single Post
     PostDTO getPostById(Integer postId);

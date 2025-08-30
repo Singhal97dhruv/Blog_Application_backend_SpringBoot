@@ -1,11 +1,16 @@
 package com.example.blog.Posts.service.impl;
 
 import com.example.blog.Posts.entities.Post;
+import com.example.blog.Posts.payload.PostResponse;
 import com.example.blog.Posts.repositories.PostRepository;
 import com.example.blog.Posts.service.PostService;
 import com.example.blog.Posts.utilities.PostDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -51,12 +56,24 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDTO> getAllPosts() {
+    public PostResponse getAllPosts(Integer pageSize, Integer pageNumber, String sortBy, String sortDir) {
 
-        List<Post>posts=postRepository.findAll();
+        Sort sort=sortDir.equalsIgnoreCase("asc")?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+        Pageable pageable= PageRequest.of(pageNumber,pageSize,sort);
+
+        Page<Post> page=postRepository.findAll(pageable);
+        List<Post>posts=page.getContent();
         List<PostDTO> postDTOS=posts.stream().map(post -> modelMapper.map(post,PostDTO.class)).toList();
 
-        return postDTOS;
+        PostResponse postResponse=new PostResponse();
+        postResponse.setContent(postDTOS);
+        postResponse.setPageNumber(pageNumber);
+        postResponse.setPageSize(pageSize);
+        postResponse.setTotalPosts(page.getTotalElements());
+        postResponse.setTotalPages(page.getTotalPages());
+        postResponse.setLastPage(page.isLast());
+
+        return postResponse;
     }
 
     @Override
@@ -83,6 +100,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostDTO> searchPosts(String keyword) {
-        return List.of();
+
+        List<Post> posts=postRepository.findByTitleContaining(keyword);
+
+        List<PostDTO>postDTOList=posts.stream().map(post -> modelMapper.map(post,PostDTO.class)).toList();
+
+        return postDTOList;
     }
 }
